@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Вход</title>
+{% endblock %}
+
+{% block content %}
+
+<main>
+
+<form method="POST" class="form-container">
+    <h3 style="margin-bottom: 20px;">Войти</h3>
+    {% csrf_token %}
+
+    <div class="form-group">
+    <label for="{{ login_form.username.id_for_label }}">{{ login_form.username.label }}</label>
+    {{ login_form.username }}
+    </div>
+
+    <div class="form-group">
+    <label for="{{ login_form.password.id_for_label }}">{{ login_form.password.label }}</label>
+    {{ login_form.password }}
+    </div>
+    
+    <div class="button-wrapper">
+    <button type="submit" class="centered-button">Войти</button> 
+    </div>
+
+    <p>У вас нет аккаунта? Тогда зарегистрируйтесь<p>
+    <a style="text-decoration: none; color: #008080;" href="{% url 'userauth:register' %}">
+       <p style="margin-top: 2px; font-size: 20px;">Регистрация</p>
+    </a>
+  
+</form>
+</main>
+
+{% endblock %}

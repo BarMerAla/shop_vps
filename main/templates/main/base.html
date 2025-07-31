@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title%} {% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    {% if messages %}
+    <div id="custom-messages" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        {% for message in messages %}
+        <div class="custom-alert custom-alert-{{ message.tags }}">
+            <span class="custom-icon">{% if message.tags == "success" %}✔{% elif message.tags == "error" %}✖{% else %}ℹ{% endif %}</span>
+            <span>{{ message }}</span>
+            <span class="custom-close" onclick="this.parentElement.remove()">✕</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <header class="header">
+        <div class="header-main">
+            <div class="logo">
+                <a href="{% url 'main:home_page' %}">
+                    <h1>Audio Shop</h1>
+                </a>
+            </div>
+            {% if show_navbar%}
+            <nav class="nav-menu">
+                <div class="dropdown">
+                    <a href="#">Категории</a>
+                    <div class="dropdown-content">
+                        {% for category in categories %}
+                        <a href="{% url 'main:home_page' %}?category={{ category.id }}">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#">Цвета</a>
+                    <div class="dropdown-content">
+                        {% for color in colors %}
+                        {% if color %}
+                        <a href="{% url 'main:home_page' %}?color={{ color}}">{{ color }}</a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#">Страны</a>
+                    <div class="dropdown-content">
+                        {% for country in countries %}
+                        <a href="{% url 'main:home_page' %}?country={{ country|urlencode }}">{{ country}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="back-home" style="margin-left: 60%;">
+                    <a href="{% url 'main:home_page' %}" style="text-decoration: none; font-size: 18px; color:#008080;">Вернуться на главную</a>
+                </div>
+                {% endif %}
+            </nav>
+            <div class="header-actions">
+                <form id="searchForm" method="GET" action="{% url 'main:home_page' %}">
+                <input type="text" name="search_all" placeholder="Поиск по каталогу" class="search-bar" id="searchInput">
+                </form>
+                <div class="icons" >
+                    <a href="{% url 'cart:cart_detail' %}">
+                        <img src="{% static 'icons/free-icon.png' %}" class="icon" style="width:28px; height:28px; margin-right:20px; color: white;">
+                    </a>
+                    {% if request.user.is_authenticated %}
+                    <div class="dropdown">
+                        <img src="{% static 'icons/icons8-cab.png' %}" class="icon" style="width:28px; height:28px; margin-right:20px; color: white;
+                        cursor: pointer;">
+                        <div class="dropdown-cab-menu">
+                            <a href="{% url 'userauth:cab' %}">Личный кабинет</a>
+                            <a href="{% url 'userauth:logout' %}">Выйти</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'userauth:login' %}">
+                        <img src="{% static 'icons/icons8-48.png' %}" class="icon" style="width:30px; height:30px;">
+                    </a>     
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="{% static 'js/script.js' %}"></script>
+    {% block content %} 
+    {% endblock%}
+    <footer>
+        <p>&copy; 2025 Мой Сайт</p>
+        <a href="{% url 'main:contacts' %}">Контакты</a>
+    </footer>
+  
+    <script>
+        setTimeout(() => {
+          const messages = document.getElementById('custom-messages');
+          if (messages) messages.remove();
+        }, 3500); // через 3.5 сек исчезает
+      </script>
+</body>
+    
+</html>
+

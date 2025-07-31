@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  web:
+    build: .
+    command: gunicorn shop.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - staticfiles_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: shop
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  staticfiles_volume:
+  media_volume:
+  postgres_data:
+

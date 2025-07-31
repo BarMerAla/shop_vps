@@ -1,0 +1,74 @@
+{%extends 'main/base.html'%}
+{% load static %}
+
+{% block title %}
+        <title>Страница товара</title>
+{% endblock %}
+
+{%block content%}
+
+<main class="product-detail">
+  <!-- Левая часть -->
+  <div style="width:60%;">
+      <img src="{{item.photo.url}}" style="height:550px;">
+  </div>
+  <!-- Средняя часть -->
+   <!-- 🧾 Блок 1: Основная информация -->
+  <div class="product-detail-info" style="width:80%;">
+      <h2 style="text-align:center;">Характеристики</h2>
+      <div class="spec-row">
+        <span class="spec-name">Категория</span>
+        <span class="spec-value">{{ item.category }}</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-name">Производитель</span>
+        <span class="spec-value">{{ item.maker.name }} | {{ item.maker.country }}</span>
+      </div>
+      <div class="spec-row">
+        <span class="spec-name">Цвет</span>
+        <span class="spec-value" style="margin-bottom: 30px;">{{ item.color }}</span>
+      </div>
+      <h2 style="text-align:center;">Описание</h2>
+      <div class="spec-row">
+        <span class="full-description">{{ item.full_description|safe }}</span>
+      </div>
+  </div>
+  <!-- Правая часть -->
+  <div class="product-buy" style="width:40%">
+    <h2>{{ item.name }}</h2>
+    <hr>
+    <div class="product-price">
+      {% load humanize %}
+      {{ item.price|intcomma }} ₸
+    </div>
+      <button id="checkout-button" class="buy-btn">Купить</button>
+      <form action="{% url 'cart:cart_add' item.id %}" method="POST">
+            {{ cart_one_form }}
+            {% csrf_token %}
+      <button type="submit" class="cart-btn">В корзину</button>
+      </form>
+  </div>
+  <script>
+    var stripe = Stripe('{{ stripe_public_key }}');
+    document.getElementById("checkout-button").addEventListener('click', function () {
+      fetch("{% url 'cart:create_checkout_session' item.id %}", {
+          method: "POST",
+          headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-type": "application/json"
+          },
+      })
+      .then(function (response) {
+          return response.json();
+      })
+      .then(function (session) {
+          return stripe.redirectToCheckout({sessionId: session.id});
+      })
+      .catch(function (error) {
+          console.error("Ошибка: ", error);
+      });
+  });
+  </script>
+</main>
+
+{%endblock%}

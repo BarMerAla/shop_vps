@@ -1,0 +1,41 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<main>
+
+<div class="edit-wrapper">
+<form method="POST" novalidate class="edit-container">
+    <h3 style="margin-bottom: 20px; text-align: center;">Редактирование данных</h3>
+    {% csrf_token %}
+    <div class="edit-group">
+    <label for="{{ username_form.id_for_label }}">{{ username_form.label }}</label>
+    {{ username_form }}
+    </div>
+
+    <div class="button-wrapper">
+    <button type="submit" name="update_username" class="centered-button">Обновить username</button>
+    </div>
+</form>
+
+<form method="POST" novalidate class="edit-container">
+    {% csrf_token %}
+    <div class="edit-group">
+    <label for="{{ email_form.id_for_label }}">{{ email_form.label }}</label>
+    {{ email_form }}
+    </div>
+
+    <div class="button-wrapper">
+    <button type="submit" name="update_email" class="centered-button">Обновить почту</button>
+    </div>
+</form>
+
+    <div class="extra-links">
+    <a href="{% url 'userauth:change_pass' %}">Изменить пароль</a>
+    <a href="{% url 'userauth:cab' %}">Вернуться в личный кабинет</a>
+    </div>
+</div>
+</main>
+
+{% endblock %} 

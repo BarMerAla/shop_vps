@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Регистрация</title>
+{% endblock %}
+
+{% block content %}
+
+<main>
+<form method="POST" class="form-container">
+    <h3 style="margin-bottom: 20px;">Регистрация</h3>
+    {% csrf_token %}
+    <div class="form-group">
+        <label form="{{ register.form.username.id_for_label }}">{{ register_form.username.label }}</label>
+        {{ register_form.username }}
+    </div>
+    <div class="form-group">
+        <label form="{{ register.form.email.id_for_label }}">{{ register_form.email.label }}</label>
+        {{ register_form.email }}
+    </div>
+    <div class="form-group">
+        <label form="{{ register.form.password1.id_for_label }}">{{ register_form.password1.label }}</label>
+        {{ register_form.password1 }}
+    </div>
+    <div class="form-group">
+        <label form="{{ register.form.password2.id_for_label }}">{{ register_form.password2.label }}</label>
+        {{ register_form.password2 }}
+    </div>
+
+    <div class="button-wrapper">
+    <button type="submit" class="centered-button">Зарегистрироваться</button>
+    <div>
+</form>
+</main>
+
+
+{% endblock %}

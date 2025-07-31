@@ -1,0 +1,128 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}
+<title>Главная страница</title>
+{%  endblock %}
+
+{% block content%}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<body>
+<main>
+<div class="all-page">
+    <div class="sidebar">
+        <form method="get" class="filter-form">
+            <h3>Цена<h3>
+                <div class="price-list">
+                    <label class="price-item">
+                    <input type="checkbox" name="price_range" value="1" {% if request.GET.get.price_range == "1" %}checked{% endif %}>
+                    0 &#8376; - 300 000 &#8376;
+                    </label>
+                    <label class="price-item">
+                    <input type="checkbox" name="price_range" value="2" {% if request.GET.get.price_range == "2" %}checked{% endif %}>
+                    300 001 &#8376; - 600 000 &#8376;
+                    </label>
+                    <label class="price-item">
+                    <input type="checkbox" name="price_range" value="3" {% if request.GET.get.price_range == "3" %}checked{% endif %}>
+                    600 001 &#8376; - 999 999 &#8376;
+                    </label>                   
+                </div>
+                <button type="submit">Выбрать</button>
+            <h3>Бренд</h3>
+                <div class="brand-list">
+                    <div id="brand-wrapper">
+                        {% for brand in brand_form.fields.brand.queryset %}
+                        <label class="brand-item {% if forloop.counter > 10 %}hidden-brand{% endif %}">
+                        <input type="checkbox" name="brand" value="{{ brand.id}}"
+                        {% if brand.id|stringformat:"s" in selected_brands %}checked{% endif %}>
+                        {{ brand.name }}
+                        </label> 
+                    {% endfor %}
+                    </div>
+                {% if brand_form.fields.brand.queryset|length > 10 %}
+                <a href="#" id="toggle-brands">Все бренды</a>
+                {% endif %}
+                </div>
+                <button type="submit">Выбрать</button>
+            </form>
+        </div>
+    <div class="content-area">
+        <div class="product-container">
+        {% for item in items %}
+            <div class="product-card">
+                <div class="product-top">
+                    <div class="product-image hover-wrapper">
+                    {% if item.photo %}
+                    <img src="{{ item.photo.url }}" alt="{{ item.name }}">
+                    {% else %}
+                    <img src="{% static 'img/istockphoto.jpg' %}" alt="Нет фото">
+                    {% endif %}
+                    <a href="{% url 'main:product_detail' item.id %}" class="hover-overlay">
+                        <span><i class="fas fa-eye"></i>Подробнее</span>
+                    </a>
+                </div>
+                <div class="product-info">
+                    <p class="product-name" title="{{ item.name }}">{{ item.name }}</p>
+                    <p style="font-family: Candara, serif; max-height: 2.4em; min-height: 2.4em;">{{ item.description }}</p>
+                    {% load humanize %}
+                    <p style="font-family: fangsong;">{{ item.price|intcomma }} &#8376;</p>
+                    <p class="stock-status">
+                        {% if item.quantity > 0 %}
+                        <i class="fas fa-check-circle" style="color: green;"></i> В наличии
+                        {% else %}
+                        <i class="fas fa-times-circle" style="color: red;"></i> Нет в наличии
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="product-bottom">
+                <form action="{% url 'cart:cart_add' item.id %}" method="POST">
+                    {{ cart_one_form }}
+                    {% csrf_token %}
+                <button class="add-to-cart">В корзину</button>
+                </form>
+            </div>
+        </div>
+{% endfor %}
+<div class="page-filler"></div>  <!-- заполнитель -->
+    <!-- Пагинация -->
+{% if page_obj.has_other_pages %}
+    {% with request.GET.urlencode|cut:"page="|add:"&" as query %}
+      
+        <div class="pagination">
+            <ul class="pagination-list">
+            {% if page_obj.has_previous %}
+            <li>
+                <a href="?{{ query }}page={{ page_obj.previous_page_number }}">←</a>
+            </li>
+            {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == 1 or num == page_obj.paginator.num_pages or num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+                {% if page_obj.number == num %}
+                    <li><span class="current-page">{{ num }}</span></li>
+                {% else %}
+                    <li>
+                        <a href="?{{ query }}page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+
+            {% elif num == page_obj.number|add:-3 or num == page_obj.number|add:3 %}
+                <li><span>...</span></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li><a href="?{{ query }}page={{ page_obj.next_page_number }}">ДАЛЕЕ →</a>
+            </li>
+        {% endif %}
+        </ul>
+    </div>
+    {% endwith %}
+    {% endif %}
+    </div>
+</div>
+</main>
+</body>
+
+{% endblock %}

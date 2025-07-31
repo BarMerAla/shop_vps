@@ -1,0 +1,123 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}
+<title>Личный кабинет</title>
+{% endblock %}
+
+{% block content %}
+
+<h3 style="margin-bottom: 20px; text-align: center;">Личный кабинет</h3>
+
+<main>
+{% if request.user.is_authenticated %}
+<div style="width: 70%; margin: 0 auto;">
+<table style="width: 100%; border-collapse: collapse;">
+    <tr>
+        <td style="border: 5px solid #ddd; padding: 10px;">Никнейм</td>
+        <td style="border: 5px solid #ddd; padding: 10px;">{{ user.username }}</td>
+    </tr>
+    <tr>
+        <td style="border: 5px solid #ddd; padding: 10px;">Почта</td>
+        <td style="border: 5px solid #ddd; padding: 10px;">{{ user.email }}</td>
+    </tr>
+</table>        
+
+<h4 style="margin-top: 40px; text-align: center;">Товары в корзине</h4>
+{% if cart_items %}
+<table style="border-collapse: collapse; width: 100%;">
+    <tr>
+        <td style="border: 3px solid #ddd; padding: 8px;">Название</td>
+        <td style="border: 3px solid #ddd; padding: 8px;">Цена</td>
+        <td style="border: 3px solid #ddd; padding: 8px;">Количество</td>
+        <td style="border: 3px solid #ddd; padding: 8px;">Итого</td>        
+    </tr>
+    {% for item in cart_items %}
+    <tr>
+        {% load humanize %}
+        <td style="border: 3px solid #ddd; padding: 8px;">{{ item.product.name }}</td>
+        <td style="border: 3px solid #ddd; padding: 8px;">{{ item.price|intcomma }} ₸</td>
+        <td style="border: 3px solid #ddd; padding: 8px;">{{ item.cart_quantity }}</td>
+        <td style="border: 3px solid #ddd; padding: 8px;">{{ item.total_price|intcomma }} ₸</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<table style="border-collapse: collapse; width: 100%; text-align: center;">
+    <td style="border: 3px solid #ddd; padding: 8px;">Общая сумма корзины</td>  
+    <td style="border: 3px solid #ddd; padding: 8px;">{{ cart_total|intcomma }} ₸</td> 
+</table>
+</div>
+{% else %}
+    <p>Корзина пуста</p>
+{% endif %}
+{% endif %}
+
+<h4 style="margin-top: 40px; text-align: center;">Ваши покупки</h4>
+{% if orders %}
+    {% for order in orders %}
+    <table style="border-collapse: collapse; width: 100%; margin-bottom: 30px; border: 2px solid #ccc;">
+    <thead style="background-color: #f5f5f5;">
+        <tr>
+        <th colspan="3" style="padding: 10px; text-align: left; font-size: 18px;">
+            Заказ от {{ order.created|date:"d.m.Y" }}
+        </th>
+        <tr>
+            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Товар</th>
+            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Количество</th>
+            <th style="padding: 8px; text-align: left; border-bottom: 1px solid #ddd;">Цена</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order.items.all %}
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ item.product.name }}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ item.quantity }}</td>
+            {% load humanize %}
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">{{ item.price|intcomma }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Общая сумма:</td>
+            <td style="padding: 10px; text-align: right; font-weight: bold;">{{ order.get_total_cost|intcomma }} ₸</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Статус заказа:</td>
+            <td style="padding: 10px; text-align: right; font-weight: bold;">{{ order.get_status_display }}</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="padding: 10px; text-align: right;">
+            <form action="{% url 'cart:delete_order' order.id %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                font-size: 14px;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: 0.3s;
+                "
+                onmouseover="this.style.backgroundColor='#c82333'"
+                onmouseout="this.style.backgroundColor='#dc3545'"
+            >Удалить заказ
+            </button>
+            </form>
+            </td>
+        </tr>
+    </tbody>
+    </table>
+    {% endfor %}
+{% else %}
+    <p style="text-align: center;">Нет завершенных покупок</p>
+{% endif %}
+
+<div class="extra-links" style="text-align: center; margin-top: 30px;">
+<a href="{% url 'cart:cart_detail' %}">Перейти в корзину</a>
+<a href="{% url 'userauth:edit' %}" style="margin-top: 25px;">Изменить данные</a>
+</div>
+
+</main>
+
+{% endblock %}

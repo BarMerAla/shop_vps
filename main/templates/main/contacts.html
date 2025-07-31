@@ -1,0 +1,51 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Контакты</title>
+{% endblock %}
+
+{% block content %}
+<main>
+
+<style>
+.contacts-view {
+    background-color: #f0f0f0;
+    padding: 30px 20px;
+    font-family: 'Inter', sans-serif;
+    color: #1a1a1a;
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: left;
+}
+        
+.contacts-view .icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 5px;
+    vertical-align: middle;
+    transition: transform 0.2s;
+}
+        
+.contacts-view .icon:hover {
+    transform: scale(1.1);
+}
+        
+.contacts-view a {
+    text-decoration: none;
+}</style>
+
+<div class="contacts-view">
+    <p style="text-align: center;">Со мной можно связаться по этим контактам
+        <a href="https://wa.me/77018938933" target="_blank">
+        <img src="{% static 'icons/icons8-whatsapp.png' %}" alt="WhatsApp" class="icon">
+        </a>
+        <a href="https://wa.me/77018938933" target="_blank">
+        <img src="{% static 'icons/icons8-телеграм.png' %}" alt="Telegramm" class="icon">
+        </a>
+    </p>
+</div>
+
+</main>
+
+{% endblock %}

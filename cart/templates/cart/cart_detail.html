@@ -1,0 +1,101 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+<div>
+    <h1 style="text-align: center;">Корзина</h1>
+</div>
+
+<div class="cart-detail">
+    <div class="cart-container">
+    {% for item in cart %}
+    {% with product=item.product %}
+        <div class="cart-item">
+            <img src="/media/{{product.photo}}" height="220px" width = "280px" style="margin: 5px">
+            <p>{{ product.name }}</p>
+            {% load humanize %}
+            <p>{{ product.price|intcomma }} &#8376;</p>
+            <form action="{% url 'cart:cart_add' product.id %}" method="post">
+            {% csrf_token %}
+            {{ item.update_quantity_form.cart_quantity }}
+            {{ item.update_quantity_form.update }}
+            <input type="submit" value ="Изменить количество" style="background-color: lightgreen; color: black;">
+            <p><strong>{{ item.total_price|intcomma }} &#8376;</strong></p>
+            </form>
+        </div>
+    {% endwith %}
+    {% endfor %}
+    </div>
+</div>
+<div class="cart-total">
+    <small><strong>Итого {{ cart.get_total_price|intcomma }} &#8376;</strong></small>
+    <div class="pay-clear">
+        <button id="checkout-all-button" class="pay-all" style="width: 200px">Оплатить</button>
+        <form action="{% url 'cart:cart_clear' %}" method="POST">
+            {% csrf_token %}
+        <button class="clear-cart" style="width: 200px">Очистить корзину</button>
+        </form>
+    </div>
+</div>
+<!-- Модальное окно -->
+<div id="errorModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <p id="modal-error-text"></p>
+    </div>
+<div>
+<script>
+    var stripe = Stripe('{{ stripe_public_key }}');
+    const itemIdsString = "{% for item in cart %}{{ item.product.id }}{% if not forloop.last %}, {% endif %}{% endfor %}";
+    const modal = document.getElementById("errorModal");
+    const modalText = document.getElementById("modal-error-text");
+    const closeBtn = document.querySelector(".close-button");
+
+    document.getElementById("checkout-all-button").addEventListener('click', function () {
+      const itemIds = itemIdsString;
+      fetch(`/cart/create_all_checkout_session/${itemIds}/`, {
+          method: "POST",
+          headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-type": "application/json"
+          },
+      })
+      .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || "Неизвестная ошибка!");
+            });
+        }
+        return response.json();
+      })
+      .then(session => {
+        if (!session.id) {
+            throw new Error("Ошибка: не удалось сделать оплату");
+        }
+        return stripe.redirectToCheckout({sessionId: session.id});
+      })
+      .catch(error => {
+          modalText.textContent = error.message;
+          modal.style.display = 'block';
+      });
+  });
+  
+  // Закрытие по кнопке "×"
+  closeBtn.onclick = function () {
+    modal.style.display = "none";
+  }
+
+   // Закрытие при клике вне окна
+
+   window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+   }
+  </script>
+</main>
+{% endblock %}
+
+
+
