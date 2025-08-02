@@ -116,8 +116,8 @@ def create_checkout_session(request, item_id):             # функция оп
                 'quantity': 1,
             }],
             mode = 'payment',
-            success_url='https://marketplace-audioshop.onrender.com/cart/success_pay/',
-            cancel_url='https://marketplace-audioshop.onrender.com/',
+            success_url='http://80.93.61.237:8001/cart/success_pay/',
+            cancel_url='http://80.93.61.237:8001/',
         )
         return JsonResponse({'id': session.id})
     
@@ -156,8 +156,8 @@ def create_all_checkout_session(request, item_ids):         # функция о�
             payment_method_types=['card'],
             line_items = line_items,
             mode = 'payment',
-            success_url='https://marketplace-audioshop.onrender.com/cart/success_pay/',
-            cancel_url='https://marketplace-audioshop.onrender.com/',
+            success_url='http://80.93.61.237:8001/cart/success_pay/',
+            cancel_url='http://80.93.61.237:8001/',
         )
         return JsonResponse({'id': session.id})
    
