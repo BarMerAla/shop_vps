@@ -92,6 +92,7 @@ main {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    align-items: center;
 }
 
 .product-container {
@@ -249,6 +250,7 @@ main {
 }
 
 .pagination {
+    margin-top: 40px;
     display: flex;
     justify-content: center;
     padding: 20px 0;
