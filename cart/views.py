@@ -110,7 +110,7 @@ def create_checkout_session(request, item_id):             # функция оп
                     'currency': 'kzt',
                     'product_data': {
                         'name': item.name,
-                        'description': "Для тестовой оплаты используйте номер карты 4242 4242 4242 4242\
+                        'description': "Для тестовой оплаты используйте номер карты 4242 4242 4242 4242. \
                                         Дата карты и ее CVV код может быть любым"
                     },
                     'unit_amount': int(item.price * 100), # Stripe требует цену в тыийнах
