@@ -8,7 +8,7 @@ services:
       - staticfiles_volume:/app/staticfiles
       - ./media:/app/media
     ports:
-      - "8001:8000"
+      - "80.93.62.190:80:8000"
     depends_on:
       - db
     env_file:
