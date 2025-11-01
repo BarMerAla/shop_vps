@@ -64,5 +64,3 @@ class InStock(models.Model):
         verbose_name = "Склад"
         verbose_name_plural = "Склады"
         
-    
-    
